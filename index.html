@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Pokeindio 151 Pokémon</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="logo-pokeindio.ico">
+<style>
+:root{--bg:#f5f5f5;--accent:#ff1c1c;--card:#fff;--green1:#4caf50;--green2:#2e7d32;}
+*{box-sizing:border-box;}
+body{font-family:Arial,sans-serif;background:linear-gradient(180deg,#ffcb05,var(--bg));margin:0;padding:0 20px 80px;color:#222;position:relative;overflow-x:hidden;}
+.container{max-width:1000px;margin:0 auto;}
+header{display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:18px;text-align:center;padding:20px;background:linear-gradient(90deg,#3b4cca,#ff1c1c);color:white;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,0.2);}
+#logo{width:120px;border-radius:50%;border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,0.3);}
+h1{font-size:2rem;margin:0;text-shadow:2px 2px 0 #222;}
+#contador{font-weight:700;margin:6px 0;font-size:1.1rem;}
+.progresso-container{width:100%;height:18px;background:#e6e6e6;border-radius:999px;overflow:hidden;margin:12px 0;}
+.progresso-barra{height:100%;width:0;background:linear-gradient(90deg,var(--green1),var(--green2));transition: width .25s;}
+.acoes{margin-top:10px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+#search{padding:8px 12px;border:2px solid #3b4cca;border-radius:8px;font-size:1rem;width:220px;}
+#reset{background:#ff1c1c;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-size:0.95rem;cursor:pointer;transition:0.2s;box-shadow:0 2px 6px rgba(0,0,0,0.2);}
+#reset:hover{background:#c71414;}
+.pokedex{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:14px;margin-top:20px;}
+.pokemon{background:var(--card);border:2px solid #ccc;border-radius:12px;padding:10px;text-align:center;transition:.15s;cursor:pointer;user-select:none;box-shadow:0 2px 6px rgba(0,0,0,0.1);position:relative;}
+.pokemon:hover{transform:translateY(-5px) rotate(-2deg);box-shadow:0 6px 12px rgba(0,0,0,0.2);}
+.pokemon.captured{background:#d9fdd3;border-color:#2e7d32;box-shadow:0 4px 10px rgba(0,0,0,0.15);}
+.pokemon img{width:80px;height:80px;image-rendering:pixelated;transition: transform .2s;}
+.pokemon span{display:block;margin-top:6px;font-weight:600;font-size:0.9rem;}
+.pokemon:hover img{transform: translateY(-8px) rotate(-5deg);}
+#topBtn{position:fixed;bottom:20px;right:20px;background:#3b4cca;color:white;border:none;border-radius:50%;width:50px;height:50px;font-size:20px;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,0.3);display:none;align-items:center;justify-content:center;z-index:100;}
+#topBtn:hover{background:#ff1c1c;}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <img id="logo" src="logo-pokeindio.ico" alt="Logo Pokeindio">
+    <h1>Pokeindio</h1>
+    <div id="contador">0 / 151 capturados</div>
+    <div class="progresso-container">
+      <div class="progresso-barra" id="barra"></div>
+    </div>
+    <div class="acoes">
+      <input type="text" id="search" placeholder="🔎 Pesquisar Pokémon...">
+      <button id="reset">🔄 Resetar Capturas</button>
+    </div>
+  </header>
+
+  <div class="pokedex" id="pokedex"></div>
+</div>
+
+<button id="topBtn">⬆️</button>
+
+<script>
+// Lista de Pokémon
+const pokemons = ["Bulbasaur","Ivysaur","Venusaur","Charmander","Charmeleon","Charizard","Squirtle","Wartortle","Blastoise","Caterpie","Metapod","Butterfree","Weedle","Kakuna","Beedrill","Pidgey","Pidgeotto","Pidgeot","Rattata","Raticate","Spearow","Fearow","Ekans","Arbok","Pikachu","Raichu","Sandshrew","Sandslash","Nidoran♀","Nidorina","Nidoqueen","Nidoran♂","Nidorino","Nidoking","Clefairy","Clefable","Vulpix","Ninetales","Jigglypuff","Wigglytuff","Zubat","Golbat","Oddish","Gloom","Vileplume","Paras","Parasect","Venonat","Venomoth","Diglett","Dugtrio","Meowth","Persian","Psyduck","Golduck","Mankey","Primeape","Growlithe","Arcanine","Poliwag","Poliwhirl","Poliwrath","Abra","Kadabra","Alakazam","Machop","Machoke","Machamp","Bellsprout","Weepinbell","Victreebel","Tentacool","Tentacruel","Geodude","Graveler","Golem","Ponyta","Rapidash","Slowpoke","Slowbro","Magnemite","Magneton","Farfetch’d","Doduo","Dodrio","Seel","Dewgong","Grimer","Muk","Shellder","Cloyster","Gastly","Haunter","Gengar","Onix","Drowzee","Hypno","Krabby","Kingler","Voltorb","Electrode","Exeggcute","Exeggutor","Cubone","Marowak","Hitmonlee","Hitmonchan","Lickitung","Koffing","Weezing","Rhyhorn","Rhydon","Chansey","Tangela","Kangaskhan","Horsea","Seadra","Goldeen","Seaking","Staryu","Starmie","Mr. Mime","Scyther","Jynx","Electabuzz","Magmar","Pinsir","Tauros","Magikarp","Gyarados","Lapras","Ditto","Eevee","Vaporeon","Jolteon","Flareon","Porygon","Omanyte","Omastar","Kabuto","Kabutops","Aerodactyl","Snorlax","Articuno","Zapdos","Moltres","Dratini","Dragonair","Dragonite","Mewtwo","Mew"];
+
+// Array de sons placeholder
+const sonsPokemons = new Array(151).fill('https://freesound.org/data/previews/341/341695_3248244-lq.mp3');
+
+const pokedexDiv = document.getElementById('pokedex');
+const contador = document.getElementById('contador');
+const barra = document.getElementById('barra');
+const searchInput = document.getElementById('search');
+const resetBtn = document.getElementById('reset');
+const topBtn = document.getElementById('topBtn');
+
+let captured = JSON.parse(localStorage.getItem('captured')) || [];
+
+// Função atualizar barra
+function atualizarProgresso(){
+  contador.textContent = `${captured.length} / ${pokemons.length} capturados`;
+  barra.style.width = (captured.length / pokemons.length * 100) + '%';
+}
+
+// Criar card Pokémon
+function criarCard(pokemon, index){
+  const div = document.createElement('div');
+  div.className = 'pokemon';
+  const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${index+1}.png`;
+  div.innerHTML = `<img src="${imgUrl}" alt="${pokemon}"><span>${index+1}. ${pokemon}</span>`;
+  if(captured.includes(index)) div.classList.add('captured');
+  div.addEventListener('click', () => {
+    if(captured.includes(index)){
+      captured = captured.filter(i => i !== index);
+      div.classList.remove('captured');
+    } else {
+      captured.push(index);
+      div.classList.add('captured');
+      const audio = new Audio(sonsPokemons[index]);
+      audio.volume = 0.5;
+      audio.play();
+    }
+    localStorage.setItem('captured', JSON.stringify(captured));
+    atualizarProgresso();
+  });
+  return div;
+}
+
+// Renderizar pokédex
+function render(filtro=''){
+  pokedexDiv.innerHTML = '';
+  pokemons.forEach((pkm,i)=>{
+    if(pkm.toLowerCase().includes(filtro) || (i+1).toString().includes(filtro)){
+      pokedexDiv.appendChild(criarCard(pkm,i));
+    }
+  });
+}
+
+// Busca
+searchInput.addEventListener('input', () => {
+  render(searchInput.value.toLowerCase());
+});
+
+// Reset
+resetBtn.addEventListener('click', () => {
+  if(confirm('Deseja realmente resetar todas as capturas?')){
+    captured = [];
+    localStorage.removeItem('captured');
+    atualizarProgresso();
+    render(searchInput.value.toLowerCase());
+  }
+});
+
+// Botão topo
+window.addEventListener('scroll', () => {
+  topBtn.style.display = (document.documentElement.scrollTop > 300) ? "flex" : "none";
+});
+topBtn.addEventListener('click', () => {
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+// Inicializar
+render();
+atualizarProgresso();
+</script>
+</body>
+  </html>
